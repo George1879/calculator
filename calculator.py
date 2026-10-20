@@ -8,9 +8,11 @@ def main():
         if is_valid(command) == True:
                 split_input(command)
 
+#Validate input (one day)
 def is_valid(command):
     return True
 
+#Loop through and perform the overall calculation
 def perform_calculation(split_list):
     priority = [
     ["("],
@@ -25,17 +27,22 @@ def perform_calculation(split_list):
 
     return temp_answer
 
+#Apply BODMAS to the input
 def BODMAS(priority, split_list, process_brackets = True):
     for i in range(0, len(priority)):
+        #Ignore processing brackets if we need
         if "(" in priority[i] and not process_brackets:
             continue
         
+        #I should've commented this while writing :/ 
         for d in range(0, len(split_list)):
             if split_list[d] in priority[i]:
                 index = d
+                #Calls smaller calc with the operator, list, and index of the number to be calculated
                 calc = smaller_calc(split_list[index], split_list, index)
                 return calc
 
+#Actually performs calculations
 def smaller_calc(operatorz, split_list, o_index):
     priority = [
     ["("],
@@ -68,6 +75,7 @@ def smaller_calc(operatorz, split_list, o_index):
 
     return answer
 
+#Loops through recursivley when every ( is detected, finishing with ) to get nested brackets
 def brackets(first, split_list):
     #Time to panic
     priority = [
@@ -100,13 +108,8 @@ def brackets(first, split_list):
 
 
 
-
-
+#Split the original input into seperate items in split_list
 def split_input(command):
-    operators = ["*", "-", "+", "/"]
-    detected_o = []
-    detected_num = []
-
     command = command.replace(" ", "")
     final = re.findall(r'\d+(?:\.\d+)?|\*\*|[+\-*/()]', command)
 

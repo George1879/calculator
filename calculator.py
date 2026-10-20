@@ -2,7 +2,7 @@ import re, operator
 
 def main():
     command = ""
-    print("Calculator 1.0 (beta)\n")
+    print("Calculator 1.1 (beta)\n")
     while command != "q":
         command = input("Enter a command: \n")
         if is_valid(command) == True:
@@ -12,28 +12,37 @@ def is_valid(command):
     return True
 
 def perform_calculation(split_list):
-    print(split_list)
-    priority = ["(", "**", "*", "/", "+", "-"]
+    priority = [
+    ["("],
+    ["**"],
+    ["*", "/"],
+    ["+", "-"]
+    ]
 
     #print(operations["+"](5,10))
     temp_answer = BODMAS(priority, split_list)
 
-    answer = "We don't know the answer gang"
 
-    return answer
+    return temp_answer
 
 def BODMAS(priority, split_list, process_brackets = True):
     for i in range(0, len(priority)):
-        if priority[i] == "(" and not process_brackets:
+        if "(" in priority[i] and not process_brackets:
             continue
+        
         for d in range(0, len(split_list)):
-            if priority[i] == split_list[d]:
-                index = split_list.index(priority[i])
-                calc = smaller_calc(priority[i],split_list, index)
+            if split_list[d] in priority[i]:
+                index = d
+                calc = smaller_calc(split_list[index], split_list, index)
                 return calc
 
 def smaller_calc(operatorz, split_list, o_index):
-    print("Operator",operatorz,"detected\n")
+    priority = [
+    ["("],
+    ["**"],
+    ["*", "/"],
+    ["+", "-"]
+    ]
     operations = {
         "+": operator.add,
         "-": operator.sub,
@@ -54,36 +63,40 @@ def smaller_calc(operatorz, split_list, o_index):
     #Replacing the list with the answer
     split_list[o_index - 1:o_index + 2] = [str(answer)]
 
+    BODMAS(priority, split_list, False)
+    answer = float(split_list[0])
+
     return answer
 
 def brackets(first, split_list):
     #Time to panic
-    priority = ["(", "**", "*", "/", "+", "-"]
+    priority = [
+    ["("],
+    ["**"],
+    ["*", "/"],
+    ["+", "-"]
+    ]
     expression = []
+    i = first + 1
 
-    for i in range(first, len(split_list)):
-        print("Test x"+str(i))
-        if split_list[i] == "(":
-            brackets(i + 1, split_list)
-
+    while i < len(split_list):
+    
+        if split_list[i] == "(":#
+            brackets(i, split_list)
+            
         elif split_list[i] == ")":
             end = i
-            for h in range(first, end):
+            for h in range(first + 1, end):
                 expression.append(split_list[h])
-                print(split_list[h])
 
             Correct_vers = BODMAS(priority, expression, False)
-            print("Maybe sorted ? ")
-            print(Correct_vers)
-
-            print("Expression achieved:",expression)
-            split_list[first - 1:end + 1] = [str(Correct_vers)]
-
-            if "(" not in expression:
-                print("FINAL VERSION!!!")
-                return 
-
-            return i
+                
+            split_list[first:end + 1] = [str(Correct_vers)]
+            
+            return Correct_vers
+        
+        i += 1
+    
 
 
 
@@ -99,6 +112,6 @@ def split_input(command):
 
     answer = perform_calculation(final)
 
-    print(str(answer))
+    print(str(answer),"\n")
 
 main()

@@ -3,14 +3,25 @@ import re, operator
 def main():
     command = ""
     print("Calculator 1.1 (beta)\n")
-    while command != "q":
+    while command != "quit":
         command = input("Enter a command: \n")
-        if is_valid(command) == True:
-                split_input(command)
+        split_input(command)
 
 #Validate input (one day)
-def is_valid(command):
-    return True
+def is_valid(split_input):
+    priority = [
+        ["("],
+        ["**"],
+        ["*", "/"],
+        ["+", "-"]
+    ]
+    valid = False
+    for i in range(0,len(split_input)):
+        if split_input[i].isdigit() or split_input[i] in priority:
+            valid = True
+        else:
+            valid = False
+    return valid
 
 #Loop through and perform the overall calculation
 def perform_calculation(split_list):
@@ -89,7 +100,7 @@ def brackets(first, split_list):
 
     while i < len(split_list):
     
-        if split_list[i] == "(":#
+        if split_list[i] == "(":
             brackets(i, split_list)
             
         elif split_list[i] == ")":
@@ -106,15 +117,24 @@ def brackets(first, split_list):
         i += 1
     
 
-
+def help():
+    print("The valid operators are: () (brackets), ** (power), * (multiply), / (divide), + (add), and - (take-away)")
+    print("Type 'quit' to exit.\n")
 
 #Split the original input into seperate items in split_list
 def split_input(command):
-    command = command.replace(" ", "")
-    final = re.findall(r'\d+(?:\.\d+)?|\*\*|[+\-*/()]', command)
-
-    answer = perform_calculation(final)
-
-    print(str(answer),"\n")
+    if command == "quit":
+        quit()
+    elif command == "help":
+        help()
+    else:
+        command = command.replace(" ", "")
+        final = re.findall(r'\d+(?:\.\d+)?|\*\*|[+\-*/()]', command)
+        valid = is_valid(final)
+        if valid == True:
+            answer = perform_calculation(final)
+            print(str(answer),"\n")
+        else:
+            print("ERROR: invalid input ('help' for command list)\n")
 
 main()

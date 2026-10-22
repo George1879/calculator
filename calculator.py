@@ -9,18 +9,61 @@ def main():
 
 #Validate input (one day)
 def is_valid(split_input):
-    priority = [
-        ["("],
-        ["**"],
-        ["*", "/"],
-        ["+", "-"]
+    valid_ops = [
+        "**","*","/","+","-"
     ]
+    brackets = ["(", ")"]
+
     valid = False
+    #Check that every item in the list is valid
     for i in range(0,len(split_input)):
-        if split_input[i].isdigit() or split_input[i] in priority:
+        if split_input[i].isdigit() or split_input[i] in valid_ops or split_input[i] in brackets:
             valid = True
         else:
             valid = False
+            return valid
+    digiCount = 0 
+    opCount = 0
+    #Check that it goes item -> operator -> item 
+    for d in range(0, len(split_input)):
+        if split_input[d] in brackets:
+            continue #Eventually check brackets are completed.. or do in brackets()
+        elif split_input[d].isdigit():
+            #Must be an operator for every two numbers. Checked at the end.
+            digiCount += 1
+            pass #Do something here :D
+        elif split_input[d] in valid_ops:
+            #Must be an operator
+            print("Operator detected:", split_input[d])
+            opCount += 1
+            print("d+1 =",d+1,"len of list =",len(split_input))
+            print("Split list:",split_input)
+            if (d+1) >= len(split_input):
+                print("Item after operator isn't a number!")
+                valid = False
+                return valid
+
+            if split_input[d-1].isdigit() == False:
+                print("Item before operator must be a number!")
+                valid = False
+                return valid
+            elif split_input[d+1].isdigit() == False:
+                print("Item after operator isn't a number!")
+                valid = False
+                return valid
+            else:
+                print("Oh hell naw\nHow did you even get this error?")
+            
+    if opCount > 0:
+        if (digiCount / opCount) != 2:
+            print("Must be an operator for every two numbers.\n")
+            valid = False
+            return valid
+    else:
+        print("Must include an operator!\n")
+        valid = False
+        return valid
+    
     return valid
 
 #Loop through and perform the overall calculation
@@ -89,7 +132,7 @@ def smaller_calc(operatorz, split_list, o_index):
 #Loops through recursivley when every ( is detected, finishing with ) to get nested brackets
 def brackets(first, split_list):
     #Time to panic
-    priority = [
+    prinaliority = [
     ["("],
     ["**"],
     ["*", "/"],
@@ -130,7 +173,9 @@ def split_input(command):
     else:
         command = command.replace(" ", "")
         final = re.findall(r'\d+(?:\.\d+)?|\*\*|[+\-*/()]', command)
-        valid = is_valid(final)
+        #Forgot how to modify re.findall so we use a seperate list with everything included to validate
+        temp = list(command)
+        valid = is_valid(temp)
         if valid == True:
             answer = perform_calculation(final)
             print(str(answer),"\n")

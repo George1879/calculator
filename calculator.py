@@ -9,62 +9,60 @@ def main():
 
 #Validate input (one day)
 def is_valid(split_input):
-    valid_ops = [
-        "**","*","/","+","-"
-    ]
-    brackets = ["(", ")"]
+    # Conceptually :
+    # must have an input
+    # must detedct -[number] as a negative number
+    # must be an input for an operator. (what's the ratio ?)
 
-    valid = False
-    #Check that every item in the list is valid
-    for i in range(0,len(split_input)):
-        if split_input[i].isdigit() or split_input[i] in valid_ops or split_input[i] in brackets:
-            valid = True
-        else:
-            valid = False
-            return valid
-    digiCount = 0 
+    operators = ["**", "*", "/", "+", "-"]
     opCount = 0
-    #Check that it goes item -> operator -> item 
-    for d in range(0, len(split_input)):
-        if split_input[d] in brackets:
-            continue #Eventually check brackets are completed.. or do in brackets()
-        elif split_input[d].isdigit():
-            #Must be an operator for every two numbers. Checked at the end.
-            digiCount += 1
-            pass #Do something here :D
-        elif split_input[d] in valid_ops:
-            #Must be an operator
-            print("Operator detected:", split_input[d])
-            opCount += 1
-            print("d+1 =",d+1,"len of list =",len(split_input))
-            print("Split list:",split_input)
-            if (d+1) >= len(split_input):
-                print("Item after operator isn't a number!")
-                valid = False
-                return valid
+    numCount = 0
+    openCount = 0
+    closedCount = 0
+    i = 0
 
-            if split_input[d-1].isdigit() == False:
-                print("Item before operator must be a number!")
-                valid = False
-                return valid
-            elif split_input[d+1].isdigit() == False:
-                print("Item after operator isn't a number!")
-                valid = False
-                return valid
+    if split_input == None:
+        return False, "Please enter a valid input."
+
+    while i < len(split_input):
+        if split_input[i] == "-":
+            #Figure out if it's a negative number..\
+            if i == 0 or split_input[i-1] in ["(", "+", "-", "*", "/", "**"]:
+                split_input[i+1] = - float(split_input[i+1])
+                del split_input[i]
+                i -= 1
             else:
-                print("Oh hell naw\nHow did you even get this error?")
-            
-    if opCount > 0:
-        if (digiCount / opCount) != 2:
-            print("Must be an operator for every two numbers.\n")
-            valid = False
-            return valid
+                opCount += 1
+
+        elif split_input[i] in operators:
+            opCount += 1
+        elif split_input[i] == "(":
+            openCount += 1
+        elif split_input[i] == ")":
+            closedCount +=1 
+        else:
+            numCount += 1
+
+        i+=1
+
+    if opCount == 0:
+        return False, "Please include an operator."
     else:
-        print("Must include an operator!\n")
-        valid = False
-        return valid
-    
-    return valid
+        if opCount == 1:
+            if numCount < 2:
+                return False, "Please Google how to use a calculator." #Change eventually
+        else:
+            if numCount - opCount < 1:
+                return False, "Please include a valid ratio of operators to numbers."
+
+    if openCount > 0 or closedCount > 0:
+        if openCount != closedCount:
+            return False, "Please include an appropriate number of brackets."
+
+    return True, ""
+
+
+
 
 #Loop through and perform the overall calculation
 def perform_calculation(split_list):
@@ -132,7 +130,7 @@ def smaller_calc(operatorz, split_list, o_index):
 #Loops through recursivley when every ( is detected, finishing with ) to get nested brackets
 def brackets(first, split_list):
     #Time to panic
-    prinaliority = [
+    priority = [
     ["("],
     ["**"],
     ["*", "/"],
@@ -162,6 +160,7 @@ def brackets(first, split_list):
 
 def help():
     print("The valid operators are: () (brackets), ** (power), * (multiply), / (divide), + (add), and - (take-away)")
+    print("A take-away sign (-) directly to the left of a number will treat it as a negative one.")
     print("Type 'quit' to exit.\n")
 
 #Split the original input into seperate items in split_list
@@ -174,12 +173,11 @@ def split_input(command):
         command = command.replace(" ", "")
         final = re.findall(r'\d+(?:\.\d+)?|\*\*|[+\-*/()]', command)
         #Forgot how to modify re.findall so we use a seperate list with everything included to validate
-        temp = list(command)
-        valid = is_valid(temp)
+        valid, message = is_valid(final)
         if valid == True:
             answer = perform_calculation(final)
             print(str(answer),"\n")
         else:
-            print("ERROR: invalid input ('help' for command list)\n")
+            print("ERROR:",message,"('help' for more info) \n")
 
 main()

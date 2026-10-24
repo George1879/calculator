@@ -125,8 +125,13 @@ def smaller_calc(operatorz, split_list, o_index):
 
         return BODMAS(priority, split_list)
 
+
     left = float(split_list[o_index - 1])
     right = float(split_list[o_index + 1])
+
+    if right == 0:
+        print("ERROR: cannot divide by 0.\n")
+        return ""
 
     answer = operations[operatorz](left, right)
     #Replacing the list with the answer
@@ -188,7 +193,10 @@ def split_input(command):
         valid, message = is_valid(final)
         if valid == True:
             answer = perform_calculation(final)
-            print(str(answer),"\n")
+            if answer == "":
+                pass
+            else:
+                print(str(answer),"\n")
         else:
             print("ERROR:",message,"('help' for more info) \n")
 

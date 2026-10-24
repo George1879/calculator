@@ -2,7 +2,7 @@ import re, operator
 
 def main():
     command = ""
-    print("Calculator 1.1 (beta)\n")
+    print("Calculator 1.2\n")
     while command != "quit":
         command = input("Enter a command: \n")
         split_input(command)

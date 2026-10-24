@@ -57,6 +57,9 @@ def is_valid(split_input):
             if openCount < closedCount:
                 return False, "Please make proper use of brackets."
         else:
+            if i != len(split_input) - 1:
+                if split_input[i+1].isdigit():
+                    return False, "Please use explicit multiplication - * between expressions."
             numCount += 1
 
         i+=1
@@ -122,7 +125,6 @@ def BODMAS(priority, split_list, process_brackets = True):
 
 #Actually performs calculations
 def smaller_calc(operatorz, split_list, o_index):
-    print("Split list:", split_list)
     priority = [
     ["("],
     ["**"],
@@ -192,8 +194,6 @@ def brackets(first, split_list):
             Correct_vers = BODMAS(priority, expression, False)
                 
             split_list[first:end + 1] = [str(Correct_vers)]
-
-            print("MODIFIED SPLIT LIST:", split_list)
             
             return Correct_vers
         

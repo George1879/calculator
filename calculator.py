@@ -30,6 +30,12 @@ def is_valid(split_input):
                 return False, "Invalid negative sign"
             #Figure out if it's a negative number..\
             if i == 0 or split_input[i-1] in ["(", "+", "-", "*", "/", "**"]:
+                #Calculate the contents of the brackets and negate the results
+                if split_input[i+1] == "(":
+                    brackets(i+1, split_input)
+                    split_input[i+1] = str(-float(split_input[i+1]))
+                    del split_input[i]
+                    continue
                 split_input[i+1] = - float(split_input[i+1])
                 del split_input[i]
                 i -= 1
@@ -48,6 +54,9 @@ def is_valid(split_input):
             numCount += 1
 
         i+=1
+
+    if len(split_input) == 1:
+        return True, ""
 
     if opCount == 0:
         return False, "Please include an operator."
@@ -126,10 +135,13 @@ def smaller_calc(operatorz, split_list, o_index):
         return BODMAS(priority, split_list)
 
 
+    if operatorz == "-" and o_index == 0:
+        return -float(split_list[o_index + 1])
+
     left = float(split_list[o_index - 1])
     right = float(split_list[o_index + 1])
 
-    if right == 0:
+    if operatorz == "/" and right == 0:
         print("ERROR: cannot divide by 0.\n")
         return ""
 
@@ -140,7 +152,7 @@ def smaller_calc(operatorz, split_list, o_index):
     BODMAS(priority, split_list, False)
     answer = float(split_list[0])
 
-    return answer
+    return BODMAS(priority, split_list, False)
 
 #Loops through recursivley when every ( is detected, finishing with ) to get nested brackets
 def brackets(first, split_list):

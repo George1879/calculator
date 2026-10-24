@@ -26,6 +26,8 @@ def is_valid(split_input):
 
     while i < len(split_input):
         if split_input[i] == "-":
+            if i == len(split_input)-1:
+                return False, "Invalid negative sign"
             #Figure out if it's a negative number..\
             if i == 0 or split_input[i-1] in ["(", "+", "-", "*", "/", "**"]:
                 split_input[i+1] = - float(split_input[i+1])
@@ -40,6 +42,8 @@ def is_valid(split_input):
             openCount += 1
         elif split_input[i] == ")":
             closedCount +=1 
+            if openCount < closedCount:
+                return False, "Please make proper use of brackets."
         else:
             numCount += 1
 
@@ -81,6 +85,9 @@ def perform_calculation(split_list):
 
 #Apply BODMAS to the input
 def BODMAS(priority, split_list, process_brackets = True):
+    #Base case - i.e. ((10-1))
+    if len(split_list) == 1:
+        return float(split_list[0])
     for i in range(0, len(priority)):
         #Ignore processing brackets if we need
         if "(" in priority[i] and not process_brackets:
@@ -96,6 +103,7 @@ def BODMAS(priority, split_list, process_brackets = True):
 
 #Actually performs calculations
 def smaller_calc(operatorz, split_list, o_index):
+    print("Split list:", split_list)
     priority = [
     ["("],
     ["**"],
@@ -113,7 +121,9 @@ def smaller_calc(operatorz, split_list, o_index):
 
     if operatorz == "(":
         n_index = split_list.index("(")
-        return brackets(n_index, split_list)
+        brackets(n_index, split_list)
+
+        return BODMAS(priority, split_list)
 
     left = float(split_list[o_index - 1])
     right = float(split_list[o_index + 1])
@@ -152,6 +162,8 @@ def brackets(first, split_list):
             Correct_vers = BODMAS(priority, expression, False)
                 
             split_list[first:end + 1] = [str(Correct_vers)]
+
+            print("MODIFIED SPLIT LIST:", split_list)
             
             return Correct_vers
         
@@ -160,7 +172,7 @@ def brackets(first, split_list):
 
 def help():
     print("The valid operators are: () (brackets), ** (power), * (multiply), / (divide), + (add), and - (take-away)")
-    print("A take-away sign (-) directly to the left of a number will treat it as a negative one.")
+    print("This calculator ignores english characters (a, b, etc).")
     print("Type 'quit' to exit.\n")
 
 #Split the original input into seperate items in split_list

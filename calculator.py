@@ -45,8 +45,14 @@ def is_valid(split_input):
         elif split_input[i] in operators:
             opCount += 1
         elif split_input[i] == "(":
+            if i>0:
+                if split_input[i-1].isdigit():
+                    return False,"Please use explicit multiplication - * between expressions."
             openCount += 1
         elif split_input[i] == ")":
+            if i != len(split_input)-1:
+                if split_input[i+1].isdigit() or split_input[i+1] == "(":
+                    return False,"Please use explicit multiplication - * between expressions."
             closedCount +=1 
             if openCount < closedCount:
                 return False, "Please make proper use of brackets."
@@ -87,10 +93,7 @@ def perform_calculation(split_list):
     ]
 
     #print(operations["+"](5,10))
-    temp_answer = BODMAS(priority, split_list)
-
-
-    return temp_answer
+    return BODMAS(priority, split_list)
 
 #Apply BODMAS to the input
 def BODMAS(priority, split_list, process_brackets = True):
@@ -103,6 +106,13 @@ def BODMAS(priority, split_list, process_brackets = True):
             continue
         
         #I should've commented this while writing :/ 
+        if "**" in priority[i]:
+            for d in range(len(split_list) - 1, -1, -1):
+                if split_list[d] in priority[i]:
+                    index = d
+                    #Calls smaller calc with the operator, list, and index of the number to be calculated
+                    calc = smaller_calc(split_list[index], split_list, index)
+                    return calc
         for d in range(0, len(split_list)):
             if split_list[d] in priority[i]:
                 index = d
@@ -145,12 +155,15 @@ def smaller_calc(operatorz, split_list, o_index):
         print("ERROR: cannot divide by 0.\n")
         return ""
 
-    answer = operations[operatorz](left, right)
+    #Checking for overflow (number too large) - maybe fix later ?
+    try:
+        answer = operations[operatorz](left, right)
+    except OverflowError:
+        print("ERROR: Result too large.\n")
+        return ""
+
     #Replacing the list with the answer
     split_list[o_index - 1:o_index + 2] = [str(answer)]
-
-    BODMAS(priority, split_list, False)
-    answer = float(split_list[0])
 
     return BODMAS(priority, split_list, False)
 

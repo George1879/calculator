@@ -2,7 +2,7 @@ name: Calculator CI
 
 on:
   pull_request
-    branches: main
+    branches:main
   tests
 
 permissions:

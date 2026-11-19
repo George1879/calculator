@@ -222,7 +222,9 @@ def split_input(command):
                 pass
             else:
                 print(str(answer),"\n")
+                return answer
         else:
             print("ERROR:",message,"('help' for more info) \n")
 
-main()
+if __name__ == "__main__":
+    main()
